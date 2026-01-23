@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { IoMdCloseCircle } from "react-icons/io";
+
 
 export type ToastVariant = "success" | "warning" | "error";
 
@@ -47,9 +49,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   const variantClasses: Record<ToastVariant, string> = {
-    success: "border-emerald-300/70 bg-emerald-600 text-white",
-    warning: "border-amber-300/70 bg-amber-400 text-slate-900",
-    error: "border-red-300/70 bg-red-600 text-white",
+    success:
+      "border-emerald-200/60 bg-gradient-to-r from-emerald-500/25 via-emerald-400/20 to-emerald-300/20 text-emerald-50",
+    warning:
+      "border-amber-200/60 bg-gradient-to-r from-amber-400/25 via-amber-300/20 to-amber-200/20 text-amber-50",
+    error:
+      "border-red-200/60 bg-gradient-to-r from-red-500/25 via-red-400/20 to-red-300/20 text-red-50",
   };
 
   return (
@@ -59,7 +64,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur ${variantClasses[toast.variant]}`}
+            className={`pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-[0_15px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl ${variantClasses[toast.variant]}`}
             role="status"
             aria-live="polite"
           >
@@ -68,24 +73,36 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               style={{
                 backgroundColor:
                   toast.variant === "success"
-                    ? "#22c55e"
+                    ? "#34d399"
                     : toast.variant === "warning"
-                    ? "#f59e0b"
+                    ? "#fbbf24"
                     : "#f87171",
               }}
               aria-hidden
             />
             <p className="flex-1 text-sm leading-relaxed">{toast.message}</p>
             <button
-              className="ml-2 rounded-lg px-2 text-xs font-semibold transition hover:bg-white/10"
+              className="ml-2 cursor-pointer rounded-lg px-2 text-xs font-semibold transition hover:bg-white/15 hover:text-white"
               onClick={() => removeToast(toast.id)}
               aria-label="Cerrar notificación"
             >
-              ×
+              <IoMdCloseCircle size={18} />
             </button>
+            <div className="absolute inset-x-3 bottom-2 h-[3px] overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full bg-white/70"
+                style={{ animation: "toast-progress 4.2s linear forwards" }}
+              />
+            </div>
           </div>
         ))}
       </div>
+      <style jsx global>{`
+        @keyframes toast-progress {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}</style>
     </ToastContext.Provider>
   );
 }
