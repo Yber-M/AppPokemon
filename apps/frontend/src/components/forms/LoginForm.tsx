@@ -8,6 +8,7 @@ import { setSession } from "@/src/store/slices/auth.slice";
 import { Button } from "@/src/components/ui/Button";
 import { Input } from "@/src/components/ui/Input";
 import { useToast } from "@/src/components/ui/ToastProvider";
+import type { UserSession } from "@/src/types/user.types";
 
 export function LoginForm() {
   const router = useRouter();
@@ -23,10 +24,15 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const data = await authService.login({ email, password });
+      const data: UserSession = await authService.login({ email, password });
       dispatch(setSession(data));
       toast.success("Inicio de sesión exitoso");
-      router.replace("/users");
+      const role = data.user?.role ?? data.role;
+      if (role === "ADMIN") {
+        router.replace("/users");
+      } else {
+        router.replace("/pokemon");
+      }
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? "Error de autenticación");
     } finally {

@@ -389,7 +389,7 @@ export default function UsersPage() {
           <div>
             <label className="text-sm font-medium text-slate-800">Rol</label>
             <select
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
+              className="cursor-pointer mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
               value={role}
               onChange={(e) => setRole(e.target.value as any)}
             >
@@ -443,7 +443,7 @@ export default function UsersPage() {
           <div>
             <label className="text-sm font-medium text-slate-800">Rol</label>
             <select
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
+              className="cursor-pointer mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
               value={eRole}
               onChange={(e) => setERole(e.target.value as any)}
             >
