@@ -43,11 +43,15 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
       body,
       cache: "no-store",
     });
+    const buffer = await res.arrayBuffer();
 
     const responseHeaders = new Headers(res.headers);
     responseHeaders.set("access-control-allow-origin", "*");
+    responseHeaders.delete("content-encoding");
+    responseHeaders.delete("content-length");
+    responseHeaders.delete("transfer-encoding");
 
-    return new NextResponse(res.body, {
+    return new NextResponse(buffer, {
       status: res.status,
       statusText: res.statusText,
       headers: responseHeaders,
