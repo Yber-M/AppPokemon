@@ -24,7 +24,7 @@ export function Pagination({ page, totalPages, onPrev, onNext, className }: Pagi
         <IoIosArrowBack />
         Anterior
       </Button>
-      <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1">
+      <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-2">
         Página {page} de {totalPages}
       </span>
       <Button
