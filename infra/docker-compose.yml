@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pt-mysql
+    environment:
+      MYSQL_DATABASE: appPokemonDB
+      MYSQL_USER: appPokemonUser
+      MYSQL_PASSWORD: appPokemonPass
+      MYSQL_ROOT_PASSWORD: rootPokemonPass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pt-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: appPokemonUser
+      PMA_PASSWORD: appPokemonPass
+      MYSQL_ROOT_PASSWORD: rootPokemonPass
+      PMA_LANG: es
+      PMA_DATABASE: appPokemonDB
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
