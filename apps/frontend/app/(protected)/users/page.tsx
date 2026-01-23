@@ -17,6 +17,8 @@ import { useToast } from "@/src/components/ui/ToastProvider";
 import { IoReload } from "react-icons/io5";
 import { Pagination } from "@/src/components/ui/Pagination";
 import { UserFilters } from "@/src/components/ui/UserFilters";
+import { IoLogOut } from "react-icons/io5";
+
 
 function Modal({
   open,
@@ -129,7 +131,7 @@ export default function UsersPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium  text-white hover:text-yellow-600 bg-[#ffe6002a] hover:bg-slate-50  cursor-pointer"
             onClick={() => router.push("/pokemon")}
           >
             Ver Pokémon
@@ -141,10 +143,10 @@ export default function UsersPage() {
             Crear usuario
           </button>
           <button
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-white hover:text-red-500 bg-[#ff010146] hover:bg-slate-50 cursor-pointer"
             onClick={onLogout}
           >
-            Logout
+            <IoLogOut className="inline-block ml-1 text-2xl" />
           </button>
         </div>
       </div>
@@ -251,7 +253,7 @@ export default function UsersPage() {
               {loading && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
               )}
-              <span>{loading ? "Cargando..." : `${filteredItems.length} usuarios`}</span>
+              <span>{loading ? "Cargando..." : `Se encontraron a ${filteredItems.length} usuarios registrados`}</span>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <button
