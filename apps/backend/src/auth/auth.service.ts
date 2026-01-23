@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
@@ -82,6 +82,56 @@ export class AuthService {
       accessToken,
       refreshToken: refreshPlain,
       user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    };
+  }
+
+  async refresh(refreshToken: string) {
+    const refreshHash = this.hashToken(refreshToken);
+
+    const tokenRow = await this.prisma.refreshToken.findUnique({
+      where: { token: refreshHash },
+      include: { user: true },
+    });
+
+    if (!tokenRow) throw new ForbiddenException('Invalid refresh token');
+    if (tokenRow.revoked) throw new ForbiddenException('Refresh token revoked');
+    if (tokenRow.expiresAt.getTime() < Date.now()) throw new ForbiddenException('Refresh token expired');
+
+    await this.prisma.refreshToken.update({
+      where: { id: tokenRow.id },
+      data: { revoked: true },
+    });
+
+    const accessToken = this.signAccessToken({
+      sub: tokenRow.user.id,
+      email: tokenRow.user.email,
+      role: tokenRow.user.role,
+    });
+
+    const newRefreshPlain = this.createRefreshTokenPlain();
+    const newRefreshHash = this.hashToken(newRefreshPlain);
+
+    const refreshExpiresIn = this.config.get<string>('REFRESH_EXPIRES_IN') || '7d';
+    const refreshTtlMs = this.parseDurationToMs(refreshExpiresIn, 7 * 86_400_000);
+    const expiresAt = new Date(Date.now() + refreshTtlMs);
+
+    await this.prisma.refreshToken.create({
+      data: {
+        token: newRefreshHash,
+        userId: tokenRow.user.id,
+        expiresAt,
+      },
+    });
+
+    return {
+      accessToken,
+      refreshToken: newRefreshPlain,
+      user: {
+        id: tokenRow.user.id,
+        email: tokenRow.user.email,
+        name: tokenRow.user.name,
+        role: tokenRow.user.role,
+      },
     };
   }
 }
