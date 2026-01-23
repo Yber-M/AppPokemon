@@ -16,6 +16,7 @@ import type { User } from "@/src/types/user.types";
 import { useToast } from "@/src/components/ui/ToastProvider";
 import { IoReload } from "react-icons/io5";
 import { Pagination } from "@/src/components/ui/Pagination";
+import { UserFilters } from "@/src/components/ui/UserFilters";
 
 function Modal({
   open,
@@ -53,6 +54,8 @@ export default function UsersPage() {
   const dispatch = useAppDispatch();
   const toast = useToast();
   const { items, loading, error } = useAppSelector((s) => s.users);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState<"ALL" | "USER" | "ADMIN">("ALL");
   const [page, setPage] = useState(1);
   const pageSize = 8;
 
@@ -82,6 +85,10 @@ export default function UsersPage() {
       setPage(totalPages);
     }
   }, [items, page, pageSize]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, roleFilter]);
 
   useEffect(() => {
     if (error) {
@@ -153,9 +160,32 @@ export default function UsersPage() {
     }
   };
 
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const filteredItems = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return items.filter((u) => {
+      const matchesTerm = term
+        ? `${u.id}`.includes(term) || u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)
+        : true;
+      const matchesRole = roleFilter === "ALL" ? true : u.role === roleFilter;
+      return matchesTerm && matchesRole;
+    });
+  }, [items, search, roleFilter]);
+
   const start = (page - 1) * pageSize;
-  const pagedItems = items.slice(start, start + pageSize);
+  const pagedItems = filteredItems.slice(start, start + pageSize);
+  const filteredTotalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+
+  const clearFilters = () => {
+    setSearch("");
+    setRoleFilter("ALL");
+    setPage(1);
+  };
+
+  useEffect(() => {
+    if (page > filteredTotalPages) {
+      setPage(filteredTotalPages);
+    }
+  }, [page, filteredTotalPages]);
 
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,29 +246,38 @@ export default function UsersPage() {
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur">
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-sm text-slate-200">
+          <div className="flex flex-col gap-3 border-b border-white/10 px-4 py-3 text-sm text-slate-200 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-2">
               {loading && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
               )}
-              <span>{loading ? "Cargando..." : `${items.length} usuarios`}</span>
+              <span>{loading ? "Cargando..." : `${filteredItems.length} usuarios`}</span>
             </div>
-            <button
-              className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-xs font-medium text-white transition hover:border-white/40 hover:bg-white/10 cursor-pointer disabled:opacity-60"
-              onClick={handleRefresh}
-              disabled={loading}
-            >
-              {loading ? "Actualizando" : "Refrescar"}
-              <IoReload className="inline-block ml-1 align-middle" />
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-xs font-medium text-white transition hover:border-white/40 hover:bg-white/10 cursor-pointer disabled:opacity-60"
+                onClick={handleRefresh}
+                disabled={loading}
+              >
+                {loading ? "Actualizando" : "Refrescar"}
+                <IoReload className="inline-block ml-1 align-middle" />
+              </button>
+              <Pagination
+                page={page}
+                totalPages={filteredTotalPages}
+                onPrev={() => setPage((p) => Math.max(1, p - 1))}
+                onNext={() => setPage((p) => Math.min(filteredTotalPages, p + 1))}
+              />
+            </div>
           </div>
 
-          <div className="flex items-center justify-end border-b border-white/10 px-4 py-3">
-            <Pagination
-              page={page}
-              totalPages={totalPages}
-              onPrev={() => setPage((p) => Math.max(1, p - 1))}
-              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+          <div className="border-b border-white/10 px-4 py-3">
+            <UserFilters
+              search={search}
+              role={roleFilter}
+              onSearchChange={setSearch}
+              onRoleChange={setRoleFilter}
+              onClearFilters={clearFilters}
             />
           </div>
 
@@ -299,9 +338,9 @@ export default function UsersPage() {
           <div className="flex items-center justify-end border-t border-white/10 px-4 py-3">
             <Pagination
               page={page}
-              totalPages={totalPages}
+              totalPages={filteredTotalPages}
               onPrev={() => setPage((p) => Math.max(1, p - 1))}
-              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onNext={() => setPage((p) => Math.min(filteredTotalPages, p + 1))}
             />
           </div>
         </div>
