@@ -27,7 +27,7 @@ export function LoginForm() {
       const data: AuthResponse = await authService.login({ email, password });
       dispatch(setSession(data));
       toast.success("Inicio de sesión exitoso");
-      const role = data.user?.role ?? data.role;
+      const role = data.user?.role;
       if (role === "ADMIN") {
         router.replace("/users");
       } else {
