@@ -4,16 +4,15 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { tokenStorage } from "@/src/utils/token";
 
-export default function Home() {
+export function useAuthGuard() {
   const router = useRouter();
 
   useEffect(() => {
     const access = tokenStorage.getAccess();
     const refresh = tokenStorage.getRefresh();
 
-    if (access || refresh) router.replace("/users");
-    else router.replace("/login");
+    if (!access && !refresh) {
+      router.replace("/login");
+    }
   }, [router]);
-
-  return null;
 }

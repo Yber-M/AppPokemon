@@ -1,11 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-
-const placeholderReducer = (state = null) => state;
+import authReducer from "./slices/auth.slice";
 
 export const store = configureStore({
   reducer: {
-    placeholder: placeholderReducer,
-    // auth: authReducer,
+    auth: authReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });
