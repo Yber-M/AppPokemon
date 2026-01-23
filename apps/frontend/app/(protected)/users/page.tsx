@@ -14,6 +14,8 @@ import {
 } from "@/src/store/slices/users.slice";
 import type { User } from "@/src/types/user.types";
 import { useToast } from "@/src/components/ui/ToastProvider";
+import { IoReload } from "react-icons/io5";
+import { Pagination } from "@/src/components/ui/Pagination";
 
 function Modal({
   open,
@@ -51,6 +53,8 @@ export default function UsersPage() {
   const dispatch = useAppDispatch();
   const toast = useToast();
   const { items, loading, error } = useAppSelector((s) => s.users);
+  const [page, setPage] = useState(1);
+  const pageSize = 8;
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -70,6 +74,14 @@ export default function UsersPage() {
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  useEffect(() => {
+    // ensure current page is valid after data changes
+    const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [items, page, pageSize]);
 
   useEffect(() => {
     if (error) {
@@ -132,6 +144,19 @@ export default function UsersPage() {
     );
   }, [router, dispatch]);
 
+  const handleRefresh = async () => {
+    try {
+      await dispatch(fetchUsers()).unwrap();
+      toast.success("Usuarios actualizados");
+    } catch (err: any) {
+      toast.error(err?.message ?? "No se pudo refrescar");
+    }
+  };
+
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const start = (page - 1) * pageSize;
+  const pagedItems = items.slice(start, start + pageSize);
+
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(clearUsersError());
@@ -192,13 +217,29 @@ export default function UsersPage() {
 
         <div className="rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur">
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-sm text-slate-200">
-            <div>{loading ? "Cargando..." : `${items.length} usuarios`}</div>
+            <div className="flex items-center gap-2">
+              {loading && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+              )}
+              <span>{loading ? "Cargando..." : `${items.length} usuarios`}</span>
+            </div>
             <button
-              className="rounded-xl border border-white/20 px-3 py-2 text-xs font-medium text-white hover:border-white/40 hover:bg-white/10 cursor-pointer"
-              onClick={() => dispatch(fetchUsers())}
+              className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-xs font-medium text-white transition hover:border-white/40 hover:bg-white/10 cursor-pointer disabled:opacity-60"
+              onClick={handleRefresh}
+              disabled={loading}
             >
-              Refrescar
+              {loading ? "Actualizando" : "Refrescar"}
+              <IoReload className="inline-block ml-1 align-middle" />
             </button>
+          </div>
+
+          <div className="flex items-center justify-end border-b border-white/10 px-4 py-3">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+            />
           </div>
 
           <div className="overflow-x-auto">
@@ -213,7 +254,7 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((u) => (
+                {pagedItems.map((u) => (
                   <tr key={u.id} className="border-t border-white/10">
                     <td className="px-4 py-3 text-slate-200">{u.id}</td>
                     <td className="px-4 py-3 text-slate-50/90">{u.email}</td>
@@ -243,7 +284,10 @@ export default function UsersPage() {
                 ))}
                 {!loading && items.length === 0 && (
                   <tr>
-                    <td className="px-4 py-12 text-center text-slate-300" colSpan={5}>
+                    <td
+                      className="px-4 py-12 text-center text-slate-300"
+                      colSpan={5}
+                    >
                       No hay usuarios.
                     </td>
                   </tr>
@@ -251,10 +295,23 @@ export default function UsersPage() {
               </tbody>
             </table>
           </div>
+
+          <div className="flex items-center justify-end border-t border-white/10 px-4 py-3">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+            />
+          </div>
         </div>
       </div>
 
-      <Modal open={createOpen} title="Crear usuario" onClose={() => setCreateOpen(false)}>
+      <Modal
+        open={createOpen}
+        title="Crear usuario"
+        onClose={() => setCreateOpen(false)}
+      >
         <form onSubmit={onCreate} className="space-y-3">
           <div>
             <label className="text-sm font-medium text-slate-800">Email</label>
@@ -276,7 +333,9 @@ export default function UsersPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-800">Contraseña</label>
+            <label className="text-sm font-medium text-slate-800">
+              Contraseña
+            </label>
             <input
               className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
               value={password}
@@ -303,7 +362,11 @@ export default function UsersPage() {
         </form>
       </Modal>
 
-      <Modal open={editOpen} title="Editar usuario" onClose={() => setEditOpen(false)}>
+      <Modal
+        open={editOpen}
+        title="Editar usuario"
+        onClose={() => setEditOpen(false)}
+      >
         <form onSubmit={onUpdate} className="space-y-3">
           <div>
             <label className="text-sm font-medium text-slate-800">Email</label>
@@ -325,7 +388,9 @@ export default function UsersPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-800">Nueva contraseña (opcional)</label>
+            <label className="text-sm font-medium text-slate-800">
+              Nueva contraseña (opcional)
+            </label>
             <input
               className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-slate-400 focus:outline-none"
               value={ePassword}

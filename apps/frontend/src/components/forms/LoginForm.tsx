@@ -38,7 +38,7 @@ export function LoginForm() {
     <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-sky-200">Bienvenido de vuelta</p>
+          <p className="text-sm font-medium text-sky-200">Hellor World!</p>
           <h1 className="text-3xl font-semibold text-white">Iniciar sesión</h1>
           <p className="mt-1 text-sm text-white/70">
             Ingresa tus credenciales para gestionar usuarios y explorar Pokemon.
