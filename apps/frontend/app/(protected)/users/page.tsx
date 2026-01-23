@@ -13,6 +13,7 @@ import {
   updateUser,
 } from "@/src/store/slices/users.slice";
 import type { User } from "@/src/types/user.types";
+import { useToast } from "@/src/components/ui/ToastProvider";
 
 function Modal({
   open,
@@ -48,6 +49,7 @@ export default function UsersPage() {
   useAuthGuard();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const { items, loading, error } = useAppSelector((s) => s.users);
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -68,6 +70,12 @@ export default function UsersPage() {
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error, toast]);
 
   useEffect(() => {
     if (!createOpen) {
@@ -127,8 +135,13 @@ export default function UsersPage() {
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(clearUsersError());
-    await dispatch(createUser({ email, name, password, role })).unwrap().catch(() => undefined);
-    setCreateOpen(false);
+    try {
+      await dispatch(createUser({ email, name, password, role })).unwrap();
+      setCreateOpen(false);
+      toast.success("Usuario creado correctamente");
+    } catch (err: any) {
+      toast.error(err?.message ?? "No se pudo crear el usuario");
+    }
   };
 
   const onUpdate = async (e: React.FormEvent) => {
@@ -142,16 +155,26 @@ export default function UsersPage() {
     if (ePassword) dto.password = ePassword;
     if (eRole !== editing.role) dto.role = eRole;
 
-    await dispatch(updateUser({ id: editing.id, dto })).unwrap().catch(() => undefined);
-    setEditOpen(false);
-    setEditing(null);
+    try {
+      await dispatch(updateUser({ id: editing.id, dto })).unwrap();
+      setEditOpen(false);
+      setEditing(null);
+      toast.success("Usuario actualizado");
+    } catch (err: any) {
+      toast.error(err?.message ?? "No se pudo actualizar el usuario");
+    }
   };
 
   const onDelete = async (u: User) => {
     const ok = confirm(`¿Eliminar a ${u.email}?`);
     if (!ok) return;
     dispatch(clearUsersError());
-    await dispatch(deleteUser(u.id)).unwrap().catch(() => undefined);
+    try {
+      await dispatch(deleteUser(u.id)).unwrap();
+      toast.success("Usuario eliminado");
+    } catch (err: any) {
+      toast.error(err?.message ?? "No se pudo eliminar el usuario");
+    }
   };
 
   return (

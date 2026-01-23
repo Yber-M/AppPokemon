@@ -57,7 +57,7 @@ const usersSlice = createSlice({
         s.error = a.error.message ?? "Error al cargar usuarios";
       })
       .addCase(createUser.fulfilled, (s, a) => {
-        s.items = [a.payload, ...s.items];
+        s.items = [...s.items, a.payload];
       })
       .addCase(createUser.rejected, (s, a) => {
         s.error = a.error.message ?? "Error al crear usuario";
