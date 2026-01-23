@@ -8,7 +8,7 @@ import { setSession } from "@/src/store/slices/auth.slice";
 import { Button } from "@/src/components/ui/Button";
 import { Input } from "@/src/components/ui/Input";
 import { useToast } from "@/src/components/ui/ToastProvider";
-import type { UserSession } from "@/src/types/user.types";
+import type { AuthResponse } from "@/src/types/auth.types";
 
 export function LoginForm() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const data: UserSession = await authService.login({ email, password });
+      const data: AuthResponse = await authService.login({ email, password });
       dispatch(setSession(data));
       toast.success("Inicio de sesión exitoso");
       const role = data.user?.role ?? data.role;
