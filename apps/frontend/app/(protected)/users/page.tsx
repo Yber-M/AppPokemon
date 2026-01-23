@@ -32,7 +32,7 @@ function Modal({
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
           <button
-            className="rounded-lg px-2 py-1 text-sm text-slate-600 hover:bg-slate-100"
+            className="rounded-lg px-2 cursor-pointer py-1 text-sm text-slate-600 hover:bg-slate-100"
             onClick={onClose}
           >
             Cerrar
@@ -97,24 +97,24 @@ export default function UsersPage() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-sm text-slate-500">Panel</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Usuarios</h1>
+          <h1 className="text-3xl font-semibold text-slate-200">Usuarios</h1>
           <p className="text-sm text-slate-500">CRUD protegido con JWT.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
             onClick={() => router.push("/pokemon")}
           >
             Ver Pokémon
           </button>
           <button
-            className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
+            className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 cursor-pointer"
             onClick={() => setCreateOpen(true)}
           >
             Crear usuario
           </button>
           <button
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
             onClick={onLogout}
           >
             Logout
@@ -171,7 +171,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-sm text-slate-200">
             <div>{loading ? "Cargando..." : `${items.length} usuarios`}</div>
             <button
-              className="rounded-xl border border-white/20 px-3 py-2 text-xs font-medium text-white hover:border-white/40 hover:bg-white/10"
+              className="rounded-xl border border-white/20 px-3 py-2 text-xs font-medium text-white hover:border-white/40 hover:bg-white/10 cursor-pointer"
               onClick={() => dispatch(fetchUsers())}
             >
               Refrescar
@@ -203,13 +203,13 @@ export default function UsersPage() {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
                         <button
-                          className="rounded-xl border border-white/20 px-3 py-2 text-xs font-semibold text-white hover:border-white/40 hover:bg-white/10"
+                          className="rounded-xl border border-white/20 px-3 py-2 text-xs font-semibold text-white hover:border-white/40 hover:bg-white/10 cursor-pointer"
                           onClick={() => openEdit(u)}
                         >
                           Editar
                         </button>
                         <button
-                          className="rounded-xl border border-red-300/50 px-3 py-2 text-xs font-semibold text-red-100 hover:border-red-200 hover:bg-red-500/10"
+                          className="rounded-xl border border-red-300/50 px-3 py-2 text-xs font-semibold text-red-100 hover:border-red-200 hover:bg-red-500/10 cursor-pointer"
                           onClick={() => onDelete(u)}
                         >
                           Eliminar
@@ -274,7 +274,7 @@ export default function UsersPage() {
               <option value="ADMIN">ADMIN</option>
             </select>
           </div>
-          <button className="w-full rounded-xl bg-slate-900 px-4 py-2 text-white shadow-sm hover:bg-slate-800">
+          <button className="w-full rounded-xl bg-slate-900 px-4 py-2 text-white shadow-sm hover:bg-slate-800 cursor-pointer">
             Crear
           </button>
         </form>
