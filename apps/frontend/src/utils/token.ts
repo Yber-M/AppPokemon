@@ -1,13 +1,24 @@
-export const tokenStorage = {
-  getAccess: () => localStorage.getItem("accessToken"),
-  setAccess: (token: string) => localStorage.setItem("accessToken", token),
-  removeAccess: () => localStorage.removeItem("accessToken"),
+const isBrowser = typeof window !== "undefined";
 
-  getRefresh: () => localStorage.getItem("refreshToken"),
-  setRefresh: (token: string) => localStorage.setItem("refreshToken", token),
-  removeRefresh: () => localStorage.removeItem("refreshToken"),
+export const tokenStorage = {
+  getAccess: () => (isBrowser ? localStorage.getItem("accessToken") : null),
+  setAccess: (token: string) => {
+    if (isBrowser) localStorage.setItem("accessToken", token);
+  },
+  removeAccess: () => {
+    if (isBrowser) localStorage.removeItem("accessToken");
+  },
+
+  getRefresh: () => (isBrowser ? localStorage.getItem("refreshToken") : null),
+  setRefresh: (token: string) => {
+    if (isBrowser) localStorage.setItem("refreshToken", token);
+  },
+  removeRefresh: () => {
+    if (isBrowser) localStorage.removeItem("refreshToken");
+  },
 
   clear: () => {
+    if (!isBrowser) return;
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
   },

@@ -10,16 +10,9 @@ api.interceptors.request.use((config) => {
     typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
   if (token) {
+    config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
 });
-
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    // Manejo de refresh token pendiente de implementación
-    return Promise.reject(error);
-  }
-);
