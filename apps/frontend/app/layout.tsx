@@ -14,8 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AppPokemon",
+  title: "App Pokemon",
   description: "Gestión de usuarios y Pokémon",
+  icons: {
+    icon: "/iconPokemon.webp",
+  },
 };
 
 export default function RootLayout({
