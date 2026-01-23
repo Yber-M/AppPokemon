@@ -112,7 +112,7 @@ export default function RegisterPage() {
             <div className="space-y-3">
               <button
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 px-4 py-3 text-base font-semibold text-slate-900 shadow-lg shadow-emerald-400/30 transition hover:from-emerald-300 hover:to-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-sky-400 px-4 py-3 text-base font-semibold text-slate-900 shadow-lg shadow-emerald-400/30 transition hover:from-emerald-300 hover:to-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
@@ -126,7 +126,7 @@ export default function RegisterPage() {
 
               <button
                 type="button"
-                className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white transition hover:border-white/30 hover:bg-white/10"
+                className="w-full cursor-pointer rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white transition hover:border-white/30 hover:bg-white/10"
                 onClick={() => router.push("/login")}
               >
                 Volver a login

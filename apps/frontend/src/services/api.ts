@@ -2,8 +2,9 @@ import axios from "axios";
 import { tokenStorage } from "@/src/utils/token";
 import { authService } from "./auth.service";
 
+// All client calls hit the local Next.js proxy to avoid CORS issues.
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: "/api/backend",
   withCredentials: false,
 });
 

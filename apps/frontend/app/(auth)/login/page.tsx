@@ -109,7 +109,7 @@ export default function LoginPage() {
 
               <button
                 type="button"
-                className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white transition hover:border-white/30 hover:bg-white/10"
+                className="w-full rounded-2xl cursor-pointer border border-white/15 bg-white/5 px-4 py-3 text-white transition hover:border-white/30 hover:bg-white/10"
                 onClick={() => router.push("/register")}
               >
                 Crear cuenta
