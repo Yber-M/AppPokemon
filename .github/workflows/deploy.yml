@@ -1,21 +1,56 @@
-name: Deploy AppPokemon (VPS + Docker Compose)
-# Push Master
+name: Deploy AppPokemon
+
 on:
   push:
-    branches: [ master ]
-#  workflow_dispatch:
+    branches:
+      - master
+  workflow_dispatch:
+
 jobs:
   deploy:
+    name: Deploy to VPS
     runs-on: ubuntu-latest
+
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          script: |
-            cd /root/projects/AppPokemon
-            git pull origin master
-            docker compose up -d --build --remove-orphans
-            docker image prune -f
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_KEY }}" > ~/.ssh/vps_key
+          chmod 600 ~/.ssh/vps_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          ssh -i ~/.ssh/vps_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "echo OK"
+
+      - name: Sync project to VPS
+        run: |
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".env" \
+            --exclude "node_modules" \
+            --exclude "apps/backend/node_modules" \
+            --exclude "apps/frontend/node_modules" \
+            --exclude "apps/frontend/.next" \
+            --exclude "dist" \
+            -e "ssh -i ~/.ssh/vps_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
+            ./ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/root/proyectos/AppPokemon/"
+
+      - name: Deploy containers
+        run: |
+          ssh -i ~/.ssh/vps_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" << 'REMOTE'
+              set -e
+              cd /root/proyectos/AppPokemon
+              docker compose up -d --build
+              docker image prune -f
+              docker compose ps
+          REMOTE
