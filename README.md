@@ -223,5 +223,4 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:3001,https://pokemonapi.globtecx.com
 * Los archivos `.env` **no se versionan** por seguridad.
 * En producción, las variables se definen directamente en el servidor.
 * El frontend solo expone variables con el prefijo `NEXT_PUBLIC_`.
-
-
+* El deploy de la rama MASTER se hace automático
