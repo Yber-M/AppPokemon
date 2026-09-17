@@ -124,6 +124,7 @@ DELETE /users/:id
 
 ```
 GET /pokemon?limit=20&offset=0
+GET /pokemon/:nameOrId
 ```
 
 Soporta:
