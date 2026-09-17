@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PokemonService } from './pokemon.service';
 
@@ -13,5 +13,10 @@ export class PokemonController {
     const o = offset ? Math.max(parseInt(offset, 10) || 0, 0) : 0;
 
     return this.pokemon.list(l, o);
+  }
+
+  @Get(':nameOrId')
+  detail(@Param('nameOrId') nameOrId: string) {
+    return this.pokemon.detail(nameOrId);
   }
 }
