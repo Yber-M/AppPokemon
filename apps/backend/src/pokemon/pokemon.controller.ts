@@ -9,7 +9,9 @@ export class PokemonController {
 
   @Get()
   list(@Query('limit') limit?: string, @Query('offset') offset?: string) {
-    const l = limit ? Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100) : 20;
+    const l = limit
+      ? Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100)
+      : 20;
     const o = offset ? Math.max(parseInt(offset, 10) || 0, 0) : 0;
 
     return this.pokemon.list(l, o);

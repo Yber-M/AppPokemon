@@ -62,10 +62,10 @@ export default function PokemonPage() {
     return `${items.length}`;
   }, [items.length, count]);
 
-  const onLogout = () => {
+  const onLogout = useCallback(() => {
     dispatch(clearSession());
     router.replace("/login");
-  };
+  }, [dispatch, router]);
 
   const handleLoadMore = useCallback(async () => {
     if (loadingMore) return;
@@ -88,9 +88,17 @@ export default function PokemonPage() {
     try {
       const detail = await pokemonService.detail(name);
       setSelectedPokemon(detail);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: { data?: { message?: string } } }).response?.data?.message ===
+          "string"
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : null;
       setSelectedPokemon(null);
-      setDetailError(err?.response?.data?.message ?? "No se pudieron cargar los detalles del pokémon.");
+      setDetailError(message ?? "No se pudieron cargar los detalles del pokémon.");
     } finally {
       setDetailLoading(false);
     }
@@ -139,7 +147,7 @@ export default function PokemonPage() {
         </div>
       </div>
     );
-  }, [dispatch, limit]);
+  }, [dispatch, limit, onLogout]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
